@@ -1,0 +1,50 @@
+name: Java Maven Build with Jacoco
+
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean verify
+
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+
+  coverage:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download JaCoCo Report
+        uses: actions/download-artifact@v3
+        with:
+          name: jacoco-report
+          path: jacoco-report
+
+      - name: Report coverage to PR
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: jacoco-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
