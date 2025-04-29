@@ -2,9 +2,9 @@ name: Java Maven Build with Jacoco
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
